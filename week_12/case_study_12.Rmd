@@ -1,15 +1,16 @@
 ---
 title: "Case Study 12"
-author: Your Name
+author: Tianze Li
 date: August 1, 2020
-output: github_document
+output: html_document
 ---
+
 ```{r}
-install.packages("widgetframe") 
-install.packages("htmlwidgets") 
-install.packages("xts") 
-install.packages("dygraphs") 
-install.packages("openmeteo")
+# install.packages("widgetframe") 
+# install.packages("htmlwidgets") 
+# install.packages("xts") 
+# install.packages("dygraphs") 
+# install.packages("openmeteo")
 
 library(tidyverse) 
 library(htmlwidgets) 
@@ -31,11 +32,9 @@ xts_data <- xts( x = d %>% select(daily_temperature_2m_max, daily_temperature_2m
 dygraph(xts_data[, "daily_temperature_2m_max"], main = "Daily Maximum Temperature in Buffalo, NY") %>% dyRangeSelector(dateWindow = c("2023-01-01", "2024-10-31"))
 
 # ribbon plot
-
 dygraph(xts_data, main = "Daily Temperatures in Buffalo, NY") %>% 
-  dySeries("daily_temperature_2m_max", label = "Max Temp") %>%
-  dySeries("daily_temperature_2m_min", label = "Min Temp") %>%
-  dySeries("daily_temperature_2m_mean", label = "Avg Temp", drawPoints = TRUE, pointSize = 2) %>%
+  dySeries(c("daily_temperature_2m_min", "daily_temperature_2m_mean", "daily_temperature_2m_max"),
+           label = "Avg Temp") %>%
   dyRangeSelector(dateWindow = c("2023-01-01", "2024-10-31"))
 ```
 
@@ -48,4 +47,3 @@ dygraph(xts_precipitation, main = "Daily precipitation Data in Buffalo, NY") %>%
   dySeries("daily_precipitation_sum", label = "Precipitation", axis = 'y2') %>%
   dyRangeSelector(dateWindow = c("2023-01-01", "2024-10-31"))
 ```
-
