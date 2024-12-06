@@ -4,4 +4,54 @@ author: Your Name
 date: August 1, 2020
 output: github_document
 ---
+
+```{r}
+library(terra)
+library(spData)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+
+library(ncdf4)
+download.file("https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc","crudata.nc",method="curl")
+
+# read in the data using the rast() function from the terra package
+tmean=rast("crudata.nc")
+
+tmean
+
+# To check the number of layers
+nlyr(tmean)
+
+# To plot the data
+plot(tmean)
+
+# Calculate the maximum temperature across all months (layers)
+tmean_max <- max(tmean)
+
+# Plot the original raster and the maximum temperature raster for comparison
+plot(tmean, 1)  # Plot the first layer of the original raster (one month)
+plot(tmean_max) # Plot the maximum temperature across all months
+
+data("world")
+
+maximum_temperature <- terra::extract(tmean_max, world, fun=max, na.rm=T, small=T)
+
+world_clim <- bind_cols(world, maximum_temperature)
+
+#Communicate your results
+ggplot() +
+  geom_sf(data=world_clim, aes(fill = max)) +
+  scale_fill_viridis_c(name="Maximum\nTemperature (C)") +
+  theme(legend.position = 'bottom')
+
+#find hottest country 
+hottest_continents <- world_clim %>%
+  group_by(continent) %>%
+  top_n(1) %>%
+  select(name_long, continent, max) %>%
+  arrange(desc(max)) %>%
+  st_set_geometry(NULL)
+```
+ 
  
