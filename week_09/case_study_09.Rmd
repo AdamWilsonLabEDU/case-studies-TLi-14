@@ -4,4 +4,65 @@ author: Your Name
 date: August 1, 2020
 output: github_document
 ---
+
+```{r}
+# install.packages("ggmap")
+# install.packages("spData")
+# install.packages("lubridate")
+
+library(sf)
+library(tidyverse)
+library(ggmap)
+library(spData)
+library(lubridate)
+
+# download data
+tablel <- "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.NA.list.v04r01.csv"
+storm_data <- read_csv(tablel)
+
+# load data
+data(world)
+data(us_states)
+
+# process data
+storm_data <- storm_data %>%
+  mutate(year = year(ISO_TIME)) %>% 
+  filter(year >= 1950) %>%  
+  mutate_if(is.numeric, function(x) ifelse(x == -999.0, NA, x)) %>%  # -999->NA
+  mutate(decade = (floor(year / 10) * 10))  
+
+# transfer 
+storms <- st_as_sf(storm_data, coords = c("LON", "LAT"), crs = 4326)
+
+# region
+region <- st_bbox(storms)
+
+# plot
+ggplot() +
+  geom_sf(data = world) +
+  facet_wrap(~decade) +
+  stat_bin2d(data = storms, aes(y = st_coordinates(storms)[, 2], x = st_coordinates(storms)[, 1]), bins = 100) +
+  scale_fill_distiller(palette = "YlOrRd", trans = "log", direction = -1, breaks = c(1, 10, 100, 1000)) +
+  coord_sf(ylim = region[c(2, 4)], xlim = region[c(1, 3)]) +
+  labs(title = "Storm Occurrences by Decade", fill = "Storm Count")
+
+# Top5
+states <- st_transform(us_states, crs = st_crs(storms))
+
+# rename it
+states <- states %>% select(state = NAME)
+
+storm_states <- st_join(storms, states, join = st_intersects, left = FALSE)
+
+# Top5
+top_states <- storm_states %>%
+  group_by(state) %>%
+  summarize(storms = length(unique(NAME))) %>%
+  arrange(desc(storms)) %>%
+  slice(1:5)
+
+# print results
+print(top_states)
+```
+ 
  
