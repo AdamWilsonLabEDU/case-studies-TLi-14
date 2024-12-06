@@ -24,18 +24,16 @@ d<- weather_history(c(43.00923265935055, -78.78494250958327),start = "2023-01-01
 
 ```{r}
 # Create xts object
-
 xts_data <- xts( x = d %>% select(daily_temperature_2m_max, daily_temperature_2m_min, daily_temperature_2m_mean), order.by = d$date )
 
-# Create dygraph with a title
-
+# Create Max_Temp dygraph with a title
 dygraph(xts_data[, "daily_temperature_2m_max"], main = "Daily Maximum Temperature in Buffalo, NY") %>% dyRangeSelector(dateWindow = c("2023-01-01", "2024-10-31"))
 
-# ribbon plot
+# Create ribbon plot
 dygraph(xts_data, main = "Daily Temperatures in Buffalo, NY") %>% 
-  dySeries(c("daily_temperature_2m_min", "daily_temperature_2m_mean", "daily_temperature_2m_max"),
-           label = "Avg Temp") %>%
-  dyRangeSelector(dateWindow = c("2023-01-01", "2024-10-31"))
+ dySeries(c("daily_temperature_2m_min", "daily_temperature_2m_mean", "daily_temperature_2m_max"),
+ label = "Avg Temp") %>%
+ dyRangeSelector(dateWindow = c("2023-01-01", "2024-10-31"))
 ```
 
 ```{r}
