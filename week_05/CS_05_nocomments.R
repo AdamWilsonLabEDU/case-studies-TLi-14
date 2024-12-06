@@ -1,7 +1,7 @@
 install.packages("leaflet")
 install.packages("leaflet.extras")
 
-
+#load libraries
 library(spData)
 library(sf)
 library(tidyverse)
@@ -39,7 +39,7 @@ new_york <- us_states %>%
 #create border
 border <- st_intersection(canada_buffered, new_york)
 
-#show border
+#show border area
 ggplot() +
   geom_sf(data = new_york, fill = "white", color = "black") +
   geom_sf(data = border, fill = "red", color = "blue") +
@@ -62,7 +62,7 @@ leaflet() %>%
   addPolygons(data = st_geometry(border_wgs), color = "red", weight = 2, fillOpacity = 0.5, popup = paste("Border area:", round(border_area, 2), "km²")) %>%
   addLegend(position = "bottomright", 
             colors = c("black", "red"), 
-            labels = c("New York", "Border Area"), 
+            labels = c("New York State", "Border Area"), 
             opacity = 0.3, 
             title = "Legend") %>%
   addScaleBar(position = "bottomleft")
