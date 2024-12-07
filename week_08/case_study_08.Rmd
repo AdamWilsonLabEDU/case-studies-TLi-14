@@ -4,4 +4,25 @@ author: Your Name
 date: August 1, 2020
 output: github_document
 ---
- 
+
+```{r}
+library("ggplot2")
+library("readr")
+library("kableExtra")
+
+CO2mean <- read_csv("C:\\Users\\DELL\\Desktop\\co2_annmean_mlo.csv",
+  skip = 43)
+
+ggplot(CO2mean, aes(x = year, y = mean)) +
+  geom_line() +
+  geom_tile(title="Annual Mean Carbon Dioxide Concentrations 1959-Present")
+
+filtered_data <- CO2mean[CO2mean[, 2] > 400, ]
+
+# print(filtered_data)
+
+
+filtered_data %>%
+  kbl(caption = "CO2 Annual Mean Carbon Dioxide Concentrations at Mona Loa Greater than Four Hundred") %>%
+  kable_material(c("striped", "hover"))
+``` 
